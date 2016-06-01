@@ -22,7 +22,6 @@
   };
 
   Timer.prototype.start = function(options) {
-
     var createSubDivs = function(timerBoxElement){
       var seconds = document.createElement('div');
       seconds.className = 'seconds';
@@ -88,19 +87,29 @@
     }, interval);
   }
 
+  /*
+    * Function finds out the number of seconds left in the timer of the particular element
+    * element - the element of which the number of seconds left has to be found
+  */
+
   Timer.prototype.fetchSecondsLeft = function(element){
     var secondsLeft = element.data('seconds-left');
     var minutesLeft = element.data('minutes-left');
 
-    if(secondsLeft){
+    if(minutesLeft === undefined){
       return parseInt(secondsLeft, 10);
-    } else if(minutesLeft) {
+    } else if(secondsLeft === undefined) {
       return parseFloat(minutesLeft) * 60;
-    }else {
+    }else{
       throw 'Missing time data';
     }
   };
 
+  /*
+    * Function starts the countdown of each of the element and binds clear when completed
+    * element - The element whose timer is to initiated
+    * options - Options specified in api call
+  */
   Timer.prototype.startCountdown = function(element, options) {
     options = options || {};
 
@@ -113,7 +122,11 @@
     element.onComplete = options.onComplete || defaultComplete;
 
     var secondsLeft = this.fetchSecondsLeft(element);
-
+    if(secondsLeft==0)
+    {
+      clearInterval(intervalId);
+      return this.clearTimer(element);
+    }
     var refreshRate = options.refreshRate || 1000;
     var endTime = secondsLeft + this.currentTime();
     var timeLeft = endTime - this.currentTime();
@@ -139,7 +152,6 @@
   };
 
   Timer.prototype.formatTimeLeft = function(timeLeft) {
-
     var lpad = function(n, width) {
       width = width || 2;
       n = n + '';
@@ -169,7 +181,6 @@
   };
 
   Timer.prototype.setFinalValue = function(finalValues, element) {
-
     if(finalValues.length === 0){
       this.clearTimer(element);
       element.trigger('complete');
