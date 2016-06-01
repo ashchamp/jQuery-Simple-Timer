@@ -163,7 +163,6 @@
       } else {
         padded = Array(width - n.length + 1).join(0) + n;
       }
-
       return padded;
     };
 
